@@ -137,13 +137,14 @@ configure_prompt() {
             # Additions (first line)
             PROMPT+=$'${vcs_info_msg_0_}' # version control
             PROMPT+=$'%(1j. %B%F{%(#.blue.black)}── %b%F{yellow}%B%j&%b%F{reset}.)'  # background jobs
-            
+            PROMPT+=$'%(?.. %B%F{%(#.blue.black)}── %?%b %F{red}%B⨯%b%F{reset})' # exit status
+
             # Second line
             PROMPT+=$'\n'
             PROMPT+=$'%B%F{%(#.blue.black)}└─%b%(#.%F{red}#.%F{blue}$)%F{reset} '
 
             # Right-side prompt with exit codes and background processes
-            RPROMPT+=$'%(?.. %? %F{red}%B⨯%b%F{reset})' # exit status
+            # RPROMPT+=$'%(?.. %? %F{red}%B⨯%b%F{reset})' # exit status
             ;;
         oneline)
             PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{%(#.red.blue)}%n@%m%b%F{reset}:%B%F{%(#.blue.green)}%~%b%F{reset}%(#.#.$) '
