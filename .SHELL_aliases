@@ -1,13 +1,1 @@
-# ls
-alias l='ls -CF'
-alias la='ls -AF'
-alias ll='ls -lF'
-alias lla='ls -alF'
-
-# tmux
-alias ttmux='tmux new-session -A -s $USER'
-
-# files
-alias mv="mv -iv"
-alias cp="cp -ivr"
-alias mkdir="mkdir -vp"
+# aliases . . .

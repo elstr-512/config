@@ -9,11 +9,17 @@ setopt nonomatch           # hide error message if there is no match for the pat
 setopt notify              # report the status of background jobs immediately
 setopt numericglobsort     # sort filenames numerically when it makes sense
 setopt promptsubst         # enable command substitution in prompt
+setopt NO_BEEP             # never beep
 
 WORDCHARS=${WORDCHARS//\/} # Don't consider certain characters part of the word
 
 # hide EOL sign ('%')
 PROMPT_EOL_MARK=""
+
+# locales (fix)
+# LC_CTYPE=en_US.UTF-8
+# LC_ALL=en_US.UTF-8
+export LANG=en_US.UTF-8
 
 # configure key keybindings
 bindkey -e                                        # emacs key bindings
@@ -30,23 +36,32 @@ bindkey '^[[F' end-of-line                        # end
 bindkey '^[[Z' undo                               # shift + tab undo last action
 
 # enable completion features
+# links: https://wiki.zshell.dev/docs/guides/customization
 autoload -Uz compinit
 compinit -d ~/.cache/zcompdump
 zstyle ':completion:*:*:*:*:*' menu select
-zstyle ':completion:*' auto-description 'specify: %d'
 zstyle ':completion:*' completer _expand _complete
-zstyle ':completion:*' format 'Completing %d'
-zstyle ':completion:*' group-name ''
 zstyle ':completion:*' list-colors ''
-zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
-zstyle ':completion:*' rehash true
 zstyle ':completion:*' select-prompt %SScrolling active: current selection at %p%s
-zstyle ':completion:*' use-compctl false
+zstyle ':completion:*:matches' group 'yes'
+zstyle ':completion:*:options' description 'yes'
+zstyle ':completion:*:options' auto-description '%d'
+zstyle ':completion:*:corrections' format ' %F{green}-- %d (errors: %e) --%f'
+zstyle ':completion:*:descriptions' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*:messages' format ' %F{purple} -- %d --%f'
+zstyle ':completion:*:warnings' format ' %F{red}-- no matches found --%f'
+zstyle ':completion:*' format ' %F{yellow}-- %d --%f'
+zstyle ':completion:*' group-name ''
 zstyle ':completion:*' verbose true
-zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd'
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|[._-]=* r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*:functions' ignored-patterns '(_*|pre(cmd|exec))'
+zstyle ':completion:*' use-cache true
+zstyle ':completion:*' rehash true
+zstyle ':completion:*:default' list-prompt '%S%M matches%s' # or / zstyle ':completion:*' list-prompt %SAt %p: Hit TAB for more, or the character to insert%s
+# zstyle ':completion:*' use-compctl false # idk
+# zstyle ':completion:*:kill:*' command 'ps -u $USER -o pid,%cpu,tty,cputime,cmd' # more processes
 
-# completion for executing files like bash
+# completion feature to execute (x) files like bash
 bindkey '^I' dotcomplete
 zle -N dotcomplete
 function dotcomplete() {                                        
@@ -62,23 +77,81 @@ zstyle ':completion:*' special-dirs true
 
 # History configurations
 HISTFILE=~/.zsh_history
-HISTSIZE=1000
-SAVEHIST=2000
+HISTSIZE=10001
+SAVEHIST=10001
 setopt hist_expire_dups_first # delete duplicates first when HISTFILE size exceeds HISTSIZE
 setopt hist_ignore_dups       # ignore duplicated commands history list
 setopt hist_ignore_space      # ignore commands that start with space
 setopt hist_verify            # show command with history expansion to user before running it
 #setopt share_history         # share command history data
 
-# force zsh to show the complete history
-alias history="history 0"
-
 # configure `time` format
-TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
+#TIMEFMT=$'\nreal\t%E\nuser\t%U\nsys\t%S\ncpu\t%P'
 
 # make less more friendly for non-text input files, see lesspipe(1)
 #[ -x /usr/bin/lesspipe ] && eval "$(SHELL=/bin/sh lesspipe)"
 
+# enable color support of ls, less and man, and also add handy aliases
+if [ -x /usr/bin/dircolors ]; then
+    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
+    export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
+
+    alias ls='ls --color=auto'
+    #alias dir='dir --color=auto'
+    #alias vdir='vdir --color=auto'
+
+    alias grep='grep --color=auto'
+    alias fgrep='fgrep --color=auto'
+    alias egrep='egrep --color=auto'
+    alias diff='diff --color=auto'
+    alias ip='ip --color=auto'
+
+    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
+    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
+    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
+    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
+    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
+    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
+    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
+
+    # Take advantage of $LS_COLORS for completion as well
+    zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
+    zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
+fi
+
+# Set up aliases
+
+#if [ -f ~/.SHELL_aliases ]; then
+#    . ~/.SHELL_aliases
+#fi
+
+alias j=jobs                  # jobs . . .
+alias pu=pushd                # push dir to stack and switch to it
+alias po=popd                 # pop from stack and switch to the previous dir
+alias d='dirs -v'             # displays the dirs on the stack
+alias h=history               # history . . .
+alias grep=egrep              # extended grep . . .
+
+alias l='ls -CF'              #
+alias la='ls -AF'             #
+alias ll='ls -lF'             #
+alias lla='ls -alF'           #
+
+# force zsh to show the complete history
+alias history="history 0"
+
+# tmux . . .
+alias ttmux='tmux new-session -A -s ee' # new session or attach to an existing session named ee
+
+# files . . .
+# verbose
+# prompt for confirmation if target exists 
+# no spelling correction
+alias mv='nocorrect mv -iv'       # 
+alias cp='nocorrect cp -ivr'      # 
+alias mkdir='nocorrect mkdir -vp' # 
+
+# PS1 | ps1 | prompt
 # set variable identifying the chroot you work in (used in the prompt below)
 if [ -z "${debian_chroot:-}" ] && [ -r /etc/debian_chroot ]; then
     debian_chroot=$(cat /etc/debian_chroot)
@@ -113,55 +186,28 @@ precmd_functions+=( precmd_vcs_info )
 setopt prompt_subst
 zstyle ':vcs_info:git*' formats '%B%F{black} ── %F{blue}(%f%b%F{blue})%f'
 
-
 configure_prompt() {
-    # prompt_symbol=㉿
-    # Skull emoji for root terminal
-    prompt_symbol=@
-    [ "$EUID" -eq 0 ] && prompt_symbol=💀
+    prompt_symbol="@"
+    [ "$EUID" -eq 0 ] && prompt_symbol=💀 # Skull emoji for root terminal
 
-    case "$PROMPT_ALTERNATIVE" in
-        twoline)
-            # PS1 - PROMPT
-            
-            # uncomment to include hostname in prompt
-            # include_hostname=yes
-            
-            # First line
-            if [ -n "$include_hostname" ]; then
-                PROMPT=$'%B%F{%(#.blue.black)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%F{%(#.red.black)}%n'$prompt_symbol$'%m%F{%(#.blue.black)}) ── [%F{reset}%(6~.%-1~/…/%4~.%5~)%F{%(#.blue.black)}]%b%F{reset}'
-            else
-                PROMPT=$'%B%F{%(#.blue.black)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%F{%(#.red.black)}%n%F{%(#.blue.black)}) ── [%F{reset}%(6~.%-1~/…/%4~.%5~)%F{%(#.blue.black)}]%b%F{reset}'
-            fi
+    # First line
+    PROMPT=$'%B%F{%(#.blue.black)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%F{%(#.red.black)}%n'$prompt_symbol$'%m%F{%(#.blue.black)}) ── [%F{reset}%(6~.%-1~/…/%4~.%5~)%F{%(#.blue.black)}]%b%F{reset}'
+    PROMPT+=$'${vcs_info_msg_0_}' # version control
+    PROMPT+=$'%(1j. %B%F{%(#.blue.black)}── %b%F{yellow}%B%j&%b%F{reset}.)'  # background jobs
+    PROMPT+=$'%(?.. %B%F{%(#.blue.black)}── %?%b %F{red}%B⨯%b%F{reset})' # exit status
 
-            # Additions (first line)
-            PROMPT+=$'${vcs_info_msg_0_}' # version control
-            PROMPT+=$'%(1j. %B%F{%(#.blue.black)}── %b%F{yellow}%B%j&%b%F{reset}.)'  # background jobs
-            PROMPT+=$'%(?.. %B%F{%(#.blue.black)}── %?%b %F{red}%B⨯%b%F{reset})' # exit status
+    # Second line
+    PROMPT+=$'\n'
+    PROMPT+=$'%B%F{%(#.blue.black)}└─%b%(#.%F{red}#.%F{blue}$)%F{reset} '
 
-            # Second line
-            PROMPT+=$'\n'
-            PROMPT+=$'%B%F{%(#.blue.black)}└─%b%(#.%F{red}#.%F{blue}$)%F{reset} '
+    #RPROMPT=' %~'     # prompt for right side of screen
 
-            # Right-side prompt with exit codes and background processes
-            # RPROMPT+=$'%(?.. %? %F{red}%B⨯%b%F{reset})' # exit status
-            ;;
-        oneline)
-            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{%(#.red.blue)}%n@%m%b%F{reset}:%B%F{%(#.blue.green)}%~%b%F{reset}%(#.#.$) '
-            RPROMPT=
-            ;;
-        backtrack)
-            PROMPT=$'${debian_chroot:+($debian_chroot)}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))}%B%F{red}%n@%m%b%F{reset}:%B%F{blue}%~%b%F{reset}%(#.#.$) '
-            RPROMPT=
-            ;;
-    esac
     unset prompt_symbol
 }
 
 # The following block is surrounded by two delimiters.
 # These delimiters must not be modified. Thanks.
 # START CONFIG VARIABLES
-PROMPT_ALTERNATIVE=twoline
 NEWLINE_BEFORE_PROMPT=yes
 # STOP CONFIG VARIABLES
 
@@ -222,18 +268,6 @@ else
 fi
 unset color_prompt force_color_prompt
 
-toggle_oneline_prompt(){
-    if [ "$PROMPT_ALTERNATIVE" = oneline ]; then
-        PROMPT_ALTERNATIVE=twoline
-    else
-        PROMPT_ALTERNATIVE=oneline
-    fi
-    configure_prompt
-    zle reset-prompt
-}
-zle -N toggle_oneline_prompt
-bindkey ^P toggle_oneline_prompt
-
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
 xterm*|rxvt*|Eterm|aterm|kterm|gnome*|alacritty)
@@ -257,39 +291,6 @@ precmd() {
     fi
 }
 
-# enable color support of ls, less and man, and also add handy aliases
-if [ -x /usr/bin/dircolors ]; then
-    test -r ~/.dircolors && eval "$(dircolors -b ~/.dircolors)" || eval "$(dircolors -b)"
-    export LS_COLORS="$LS_COLORS:ow=30;44:" # fix ls color for folders with 777 permissions
-
-    alias ls='ls --color=auto'
-    #alias dir='dir --color=auto'
-    #alias vdir='vdir --color=auto'
-
-    alias grep='grep --color=auto'
-    alias fgrep='fgrep --color=auto'
-    alias egrep='egrep --color=auto'
-    alias diff='diff --color=auto'
-    alias ip='ip --color=auto'
-
-    export LESS_TERMCAP_mb=$'\E[1;31m'     # begin blink
-    export LESS_TERMCAP_md=$'\E[1;36m'     # begin bold
-    export LESS_TERMCAP_me=$'\E[0m'        # reset bold/blink
-    export LESS_TERMCAP_so=$'\E[01;33m'    # begin reverse video
-    export LESS_TERMCAP_se=$'\E[0m'        # reset reverse video
-    export LESS_TERMCAP_us=$'\E[1;32m'     # begin underline
-    export LESS_TERMCAP_ue=$'\E[0m'        # reset underline
-
-    # Take advantage of $LS_COLORS for completion as well
-    zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
-    zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#)*=0=01;31'
-fi
-
-# aliases
-if [ -f ~/.SHELL_aliases ]; then
-    . ~/.SHELL_aliases
-fi
-
 # enable auto-suggestions based on the history
 if [ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]; then
     . /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -301,4 +302,3 @@ fi
 if [ -f /etc/zsh_command_not_found ]; then
     . /etc/zsh_command_not_found
 fi
-
