@@ -5,7 +5,7 @@ local lspconfig = require "lspconfig"
 
 -- EXAMPLE
 local servers = {
-  "html", "cssls" ,
+  "html", "cssls" , -- included install defaults
   "clangd"
 }
 local nvlsp = require "nvchad.configs.lspconfig"
