@@ -141,7 +141,8 @@ alias lla='ls -alF'           #
 alias history="history 0"
 
 # tmux . . .
-alias ttmux='tmux new-session -A -s ee' # new session or attach to an existing session named ee
+# alias ttmux='tmux new-session -A -s ee' # new session or attach to an existing session named ee
+alias ttmux='~/util_scripts/simple_tmux_sesh.sh'
 
 # files . . .
 # verbose
