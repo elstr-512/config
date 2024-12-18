@@ -184,17 +184,17 @@ autoload -Uz vcs_info
 precmd_vcs_info() { vcs_info }
 precmd_functions+=( precmd_vcs_info )
 setopt prompt_subst
-zstyle ':vcs_info:git*' formats '%B%F{black} ── %F{blue}(%f%b%F{blue})%f'
+zstyle ':vcs_info:git*' formats '%B%F{black} ─ %F{blue}(%f%b%F{blue})%f'
 
 configure_prompt() {
     prompt_symbol="@"
     [ "$EUID" -eq 0 ] && prompt_symbol=💀 # Skull emoji for root terminal
 
     # First line
-    PROMPT=$'%B%F{%(#.blue.black)}┌──${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%F{%(#.red.black)}%n'$prompt_symbol$'%m%F{%(#.blue.black)}) ── [%F{reset}%(6~.%-1~/…/%4~.%5~)%F{%(#.blue.black)}]%b%F{reset}'
+    PROMPT=$'%B%F{%(#.blue.black)}┌─${debian_chroot:+($debian_chroot)─}${VIRTUAL_ENV:+($(basename $VIRTUAL_ENV))─}(%F{%(#.red.black)}%n'$prompt_symbol$'%m%F{%(#.blue.black)}) ─ [%F{reset}%(6~.%-1~/…/%4~.%5~)%F{%(#.blue.black)}]%b%F{reset}'
     PROMPT+=$'${vcs_info_msg_0_}' # version control
-    PROMPT+=$'%(1j. %B%F{%(#.blue.black)}── %b%F{yellow}%B%j&%b%F{reset}.)'  # background jobs
-    PROMPT+=$'%(?.. %B%F{%(#.blue.black)}── %?%b %F{red}%B⨯%b%F{reset})' # exit status
+    PROMPT+=$'%(1j. %B%F{%(#.blue.black)}─ %b%F{yellow}%B%j&%b%F{reset}.)'  # background jobs
+    PROMPT+=$'%(?.. %B%F{%(#.blue.black)}─ %?%b %F{red}%B⨯%b%F{reset})' # exit status
 
     # Second line
     PROMPT+=$'\n'
