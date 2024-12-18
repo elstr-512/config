@@ -20,7 +20,6 @@ M.mason = {
   pkgs = {
     "clangd",
     "cpptools",
-    "asm-lsp",
     "stylua",
     "shellcheck",
     "shfmt",

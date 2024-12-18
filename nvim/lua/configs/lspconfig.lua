@@ -1,4 +1,6 @@
 -- load defaults i.e lua_lsp
+-- how to: https://github.com/neovim/nvim-lspconfig
+--
 require("nvchad.configs.lspconfig").defaults()
 
 local lspconfig = require "lspconfig"
@@ -8,7 +10,6 @@ local servers = {
   "html",
   "cssls",
   "clangd",
-  "asm-lsp",
 }
 local nvlsp = require "nvchad.configs.lspconfig"
 
@@ -20,6 +21,9 @@ for _, lsp in ipairs(servers) do
     capabilities = nvlsp.capabilities,
   }
 end
+
+-- assembler lsp, remember to export path to asm-lsp bin : /home/ee/.cargo/bin
+require("lspconfig").asm_lsp.setup {}
 
 -- configuring single server, example: typescript
 -- lspconfig.ts_ls.setup {
