@@ -15,4 +15,18 @@ M.base46 = {
   -- },
 }
 
+-- Mason ensure installed
+M.mason = {
+  pkgs = {
+    "clangd",
+    "cpptools",
+    "asm-lsp",
+    "stylua",
+    "shellcheck",
+    "shfmt",
+    "flake8",
+    "cpptools",
+  },
+}
+
 return M
