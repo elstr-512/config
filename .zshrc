@@ -140,9 +140,14 @@ alias lla='ls -alF'           #
 # force zsh to show the complete history
 alias history="history 0"
 
-# tmux . . .
-# alias ttmux='tmux new-session -A -s ee' # new session or attach to an existing session named ee
-alias ttmux='~/util_scripts/simple_tmux_sesh.sh'
+# tmux util scripts
+if [ -f "$HOME/util_scripts/simple_tmux_sesh.sh" ] ; then
+  alias ttmux='~/util_scripts/simple_tmux_sesh.sh'
+fi
+
+if [ -f "$HOME/util_scripts/writing_tmux_sesh.sh" ] ; then
+  alias wtmux='~/util_scripts/writing_tmux_sesh.sh'
+fi
 
 # files . . .
 # verbose
