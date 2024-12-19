@@ -5,4 +5,6 @@ require "nvchad.options"
 local o = vim.o
 o.cursorlineopt = "both" -- to enable cursorline!
 o.spelllang = "en_us"
-o.spell = true
+-- o.spell = true -- to enable spellcheck on startup (or just set spell manually)
+
+o.scrolloff = 8
