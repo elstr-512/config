@@ -1,6 +1,8 @@
+-- NOTE: This file is unused, kickstart handles this task
+
 local options = {
   formatters_by_ft = {
-    lua = { "stylua" },
+    lua = { 'stylua' },
     -- css = { "prettier" },
     -- html = { "prettier" },
   },
