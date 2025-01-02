@@ -141,12 +141,8 @@ alias lla='ls -alF'           #
 alias history="history 0"
 
 # tmux util scripts
-if [ -f "$HOME/util_scripts/simple_tmux_sesh.sh" ] ; then
-  alias ttmux='~/util_scripts/simple_tmux_sesh.sh'
-fi
-
-if [ -f "$HOME/util_scripts/writing_tmux_sesh.sh" ] ; then
-  alias wtmux='~/util_scripts/writing_tmux_sesh.sh'
+if [ -f "$HOME/.config/utils/scripts/simple_tmux_sesh.sh" ] ; then
+  alias ttmux='~/.config/utils/scripts/simple_tmux_sesh.sh'
 fi
 
 # files . . .
