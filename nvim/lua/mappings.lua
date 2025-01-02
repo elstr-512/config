@@ -36,6 +36,9 @@ vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper win
 
 -------- [[ My Keymaps [ee] ]] ---------
 
+--  CTRL+[ for nordic keyboard
+vim.keymap.set({ 'n', 'i', 'v' }, '<C-å>', '<ESC>', { desc = '<ESC>' })
+
 -- CTRL+S save
 vim.keymap.set({ 'n', 'i', 'v' }, '<C-s>', '<cmd> w <cr><ESC>', { desc = 'Save' })
 
