@@ -1,0 +1,11 @@
+# Setting util for expanding git repositories in home-Dir withing vs-code
+**Git: Repository Scan Max Depth**
+
+-1
+
+# And stop vs-code from expanding sub-Dirs
+**Git: Repository Scan Ignored Folders**
+
+.local
+.tmux
+
